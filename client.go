@@ -20,7 +20,7 @@ type client struct {
 
 func (c *client) Queue(queues ...string) (err error) {
 	for _, q := range queues {
-		_, err = c.ch.QueueDeclare(parseQueue(q), true, false, false, false, nil)
+		_, err = c.ch.QueueDeclare(q, true, false, false, false, nil)
 		if err != nil {
 			break
 		}
@@ -37,7 +37,7 @@ func (c *client) MustQueue(queues ...string) {
 
 func (c *client) Exchange(exchanges ...string) (err error) {
 	for _, ex := range exchanges {
-		err = c.ch.ExchangeDeclare(parseExchange(ex), "fanout", true, false, false, false, nil)
+		err = c.ch.ExchangeDeclare(ex, "fanout", true, false, false, false, nil)
 		if err != nil {
 			break
 		}
@@ -64,7 +64,7 @@ func (c *client) Bind(ex string, queues ...string) (err error) {
 			break
 		}
 
-		err = c.ch.QueueBind(parseQueue(q), "", parseExchange(ex), false, nil)
+		err = c.ch.QueueBind(q, "", ex, false, nil)
 		if err != nil {
 			break
 		}

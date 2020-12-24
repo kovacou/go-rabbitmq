@@ -7,16 +7,16 @@ package rabbitmq
 
 import (
 	"encoding/json"
-	"log"
-	"strings"
+	"time"
 
 	"github.com/kovacou/go-types"
 	"github.com/streadway/amqp"
 )
 
 type PubParams struct {
-	Mandatory bool
-	Immediate bool
+	Mandatory  bool
+	Immediate  bool
+	IsExchange bool
 }
 
 func (c *client) getPubParams(p []PubParams) PubParams {
@@ -37,16 +37,17 @@ func (c *client) Pub(q string, v types.Map, pp ...PubParams) (err error) {
 		ContentType:  "text/plain",
 		DeliveryMode: 2,
 	}
+
+	// Adding date of publication (for easy debug)
+	v.Set("published_at", time.Now().UTC().String())
 	m.Body, _ = json.Marshal(v)
 
-	if strings.HasSuffix(q, SuffixQueue) {
-		key = q
-	} else if strings.HasSuffix(q, SuffixExchange) {
+	p := c.getPubParams(pp)
+	if p.IsExchange {
 		e = q
 	} else {
-		log.Panicf("The queue/exchange destination is not valid. You must respect the pattern xxx%s or xxx%s", SuffixQueue, SuffixExchange)
+		key = q
 	}
 
-	p := c.getPubParams(pp)
 	return c.ch.Publish(e, key, p.Mandatory, p.Immediate, m)
 }

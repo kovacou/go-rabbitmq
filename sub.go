@@ -13,11 +13,13 @@ import (
 )
 
 type SubParams struct {
-	Consumer  string
-	AutoAck   bool
-	Exclusive bool
-	NoLocal   bool
-	NoWait    bool
+	Consumer      string
+	AutoAck       bool
+	Exclusive     bool
+	NoLocal       bool
+	NoWait        bool
+	Multiple      bool
+	RequeueOnNack bool
 }
 
 func (c *client) getSubParams(p []SubParams) SubParams {
@@ -34,7 +36,7 @@ func (c *client) getSubParams(p []SubParams) SubParams {
 	}
 }
 
-func (c *client) Sub(q string, cb func(amqp.Delivery, types.Map), sp ...SubParams) (err error) {
+func (c *client) Sub(q string, cb func(amqp.Delivery, types.Map) bool, sp ...SubParams) (err error) {
 	c.MustQueue(q)
 	p := c.getSubParams(sp)
 	ch, err := c.ch.Consume(q, p.Consumer, p.AutoAck, p.Exclusive, p.NoLocal, p.NoWait, nil)
@@ -45,7 +47,11 @@ func (c *client) Sub(q string, cb func(amqp.Delivery, types.Map), sp ...SubParam
 	for m := range ch {
 		payload := types.Map{}
 		_ = json.Unmarshal(m.Body, &payload)
-		cb(m, payload)
+		if cb(m, payload) {
+			m.Ack(p.Multiple)
+		} else {
+			m.Nack(p.Multiple, p.RequeueOnNack)
+		}
 	}
 
 	return
