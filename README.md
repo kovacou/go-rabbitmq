@@ -38,7 +38,7 @@ func init() {
 	err := rb.Queue("my_queue", "my_second_queue")
 	if err != nil {
 		panic(err)
-    }
+	}
     
     // Equals to
     rb.MustQueue("my_queue", "my_second_queue")
@@ -50,7 +50,7 @@ func init() {
 	err := rb.Exchange("my_exchange", "my_second_exchange")
 	if err != nil {
 		panic(err)
-    }
+	}
     
     // Equals to
     rb.MustQueue("my_exchange", "my_second_exchange")
