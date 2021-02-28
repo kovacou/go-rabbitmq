@@ -12,6 +12,7 @@ import (
 	"github.com/streadway/amqp"
 )
 
+// SubParams contains parameters when subscribing to a queue.
 type SubParams struct {
 	Consumer      string
 	AutoAck       bool
@@ -22,6 +23,7 @@ type SubParams struct {
 	RequeueOnNack bool
 }
 
+// getSubParams returns the first parameter found or the default one.
 func (c *client) getSubParams(p []SubParams) SubParams {
 	if len(p) > 0 {
 		return p[1]
@@ -36,6 +38,7 @@ func (c *client) getSubParams(p []SubParams) SubParams {
 	}
 }
 
+// Sub to a queue.
 func (c *client) Sub(q string, cb func(amqp.Delivery, types.Map) bool, sp ...SubParams) (err error) {
 	c.MustQueue(q)
 	p := c.getSubParams(sp)
@@ -48,9 +51,9 @@ func (c *client) Sub(q string, cb func(amqp.Delivery, types.Map) bool, sp ...Sub
 		payload := types.Map{}
 		_ = json.Unmarshal(m.Body, &payload)
 		if cb(m, payload) {
-			m.Ack(p.Multiple)
+			_ = m.Ack(p.Multiple)
 		} else {
-			m.Nack(p.Multiple, p.RequeueOnNack)
+			_ = m.Nack(p.Multiple, p.RequeueOnNack)
 		}
 	}
 

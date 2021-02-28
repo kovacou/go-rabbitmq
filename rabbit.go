@@ -6,15 +6,9 @@
 package rabbitmq
 
 import (
-	"fmt"
-
+	"github.com/kovacou/go-env"
 	"github.com/kovacou/go-types"
 	"github.com/streadway/amqp"
-)
-
-var (
-	SuffixQueue    = "_q"
-	SuffixExchange = "_e"
 )
 
 // Connection is a client for RabbitMQ.
@@ -35,7 +29,10 @@ func Open() (Connection, error) {
 }
 
 // OpenEnv opens a new connection from environment.
-func OpenEnv() {
+func OpenEnv(key string) (Connection, error) {
+	cfg := Config{}
+	env.UnmarshalWithPrefix(&cfg, key)
+	return OpenWith(cfg)
 }
 
 // OpenWith opens a new connection with the given config.
@@ -55,14 +52,4 @@ func OpenWith(cfg Config) (con Connection, err error) {
 	}
 
 	return &client{Connection: amqpc, ch: ch}, nil
-}
-
-// parseQueue add the queue suffix to the given name.
-func parseQueue(name string) string {
-	return fmt.Sprintf("%s%s", name, SuffixQueue)
-}
-
-// parseExchange add the exchange suffix to the given name.
-func parseExchange(name string) string {
-	return fmt.Sprintf("%s%s", name, SuffixExchange)
 }

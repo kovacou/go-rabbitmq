@@ -13,12 +13,14 @@ import (
 	"github.com/streadway/amqp"
 )
 
+// PubParams contains parameters when publishing a new message.
 type PubParams struct {
 	Mandatory  bool
 	Immediate  bool
-	IsExchange bool
+	IsExchange bool // Says if the message is gonna be pushed into an exchange.
 }
 
+// getPubParams returns the first parameter found or the default one.
 func (c *client) getPubParams(p []PubParams) PubParams {
 	if len(p) > 0 {
 		return p[1]
@@ -30,6 +32,7 @@ func (c *client) getPubParams(p []PubParams) PubParams {
 	}
 }
 
+// Pub a new message to the given queue/exchange.
 func (c *client) Pub(q string, v types.Map, pp ...PubParams) (err error) {
 	var e, key string
 

@@ -1,8 +1,9 @@
 module github.com/kovacou/go-rabbitmq
 
-go 1.15
+go 1.16
 
 require (
-	github.com/kovacou/go-types v0.0.0-20201106192738-afea025e383a
+	github.com/kovacou/go-env v0.0.1
+	github.com/kovacou/go-types v0.0.1
 	github.com/streadway/amqp v1.0.0
 )
