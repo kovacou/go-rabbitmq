@@ -1,4 +1,4 @@
-// Copyright © 2020 Alexandre Kovac <contact@kovacou.com>.
+// Copyright © 2020 Alexandre KOVAC <contact@kovacou.com>.
 //
 // Use of this source code is governed by an MIT-style
 // license that can be found in the LICENSE file.
@@ -31,7 +31,7 @@ func Open() (Connection, error) {
 // OpenEnv opens a new connection from environment.
 func OpenEnv(key string) (Connection, error) {
 	cfg := Config{}
-	env.UnmarshalWithPrefix(&cfg, key)
+	_ = env.UnmarshalWithPrefix(&cfg, key)
 	return OpenWith(cfg)
 }
 
